@@ -1,4 +1,4 @@
-# Product Design Document: Real Estate ERP/CRM (ISRH)
+# Product Design Document: Real Estate ERP/CRM
 
 ## 1. Executive Summary
 
