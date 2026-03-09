@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import sparcLogo from "../image/sparc.png";
 
 function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -19,11 +20,10 @@ function Header() {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
-          <div className="size-8 bg-navy-dark text-primary rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-2xl">domain</span>
-          </div>
-          <h2 className="text-navy-dark dark:text-white text-xl font-extrabold tracking-tight">
-            ELITE<span className="text-primary">ESTATE</span>
+          <img src={sparcLogo} alt="Inner SPARC Realty Corporation" className="h-10 w-auto" />
+          <h2 className="text-navy-dark dark:text-white text-lg font-extrabold tracking-tight leading-tight">
+            Inner SPARC<br />
+            <span className="text-primary text-xs font-semibold tracking-wider">Realty Corporation</span>
           </h2>
         </Link>
 
@@ -76,13 +76,10 @@ function Header() {
 
             {/* Mobile Logo */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="size-8 bg-navy-dark text-primary rounded-lg flex items-center justify-center">
-                <span className="material-symbols-outlined text-xl">
-                  domain
-                </span>
-              </div>
-              <span className="text-navy-dark text-lg font-extrabold tracking-tight">
-                ELITE<span className="text-primary">ESTATE</span>
+              <img src={sparcLogo} alt="Inner SPARC Realty Corporation" className="h-10 w-auto" />
+              <span className="text-navy-dark text-lg font-extrabold tracking-tight leading-tight">
+                Inner SPARC<br />
+                <span className="text-primary text-xs font-semibold tracking-wider">Realty Corporation</span>
               </span>
             </div>
 

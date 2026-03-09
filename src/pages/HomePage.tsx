@@ -184,7 +184,7 @@ function HomePage() {
                   For Sale
                 </div>
                 <div className="absolute bottom-4 right-4 bg-primary text-navy-dark px-4 py-2 rounded-xl font-black text-lg">
-                  $3,250,000
+                  ₱X,XXX,XXX
                 </div>
               </div>
               <div className="p-8">
@@ -192,10 +192,10 @@ function HomePage() {
                   <span className="material-symbols-outlined text-sm">
                     location_on
                   </span>
-                  Beverly Hills, CA
+                  Kawit, Cavite
                 </div>
                 <h3 className="text-xl font-bold text-navy-dark dark:text-white mb-6">
-                  Skyline Modern Estate
+                  Monteroyale Subdivision
                 </h3>
                 <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700">
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
@@ -228,7 +228,7 @@ function HomePage() {
                   New Listing
                 </div>
                 <div className="absolute bottom-4 right-4 bg-primary text-navy-dark px-4 py-2 rounded-xl font-black text-lg">
-                  $1,890,000
+                  ₱X,XXX,XXX
                 </div>
               </div>
               <div className="p-8">
@@ -236,10 +236,10 @@ function HomePage() {
                   <span className="material-symbols-outlined text-sm">
                     location_on
                   </span>
-                  Malibu, CA
+                  Tanza, Cavite
                 </div>
                 <h3 className="text-xl font-bold text-navy-dark dark:text-white mb-6">
-                  Ocean Breeze Penthouse
+                  Savia Parkway
                 </h3>
                 <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700">
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
@@ -272,7 +272,7 @@ function HomePage() {
                   For Sale
                 </div>
                 <div className="absolute bottom-4 right-4 bg-primary text-navy-dark px-4 py-2 rounded-xl font-black text-lg">
-                  $4,100,000
+                  ₱X,XXX,XXX
                 </div>
               </div>
               <div className="p-8">
@@ -280,10 +280,10 @@ function HomePage() {
                   <span className="material-symbols-outlined text-sm">
                     location_on
                   </span>
-                  Aspen, CO
+                  General Trias, Cavite
                 </div>
                 <h3 className="text-xl font-bold text-navy-dark dark:text-white mb-6">
-                  The Quartz Residence
+                  Lancaster New City
                 </h3>
                 <div className="flex items-center justify-between pt-6 border-t border-slate-100 dark:border-slate-700">
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
