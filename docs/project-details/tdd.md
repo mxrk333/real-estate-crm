@@ -1,92 +1,122 @@
-This **Technical Design Document (TDD)** serves as the engineering blueprint for the **Real Estate ERP/CRM**. It bridges the high-level goals of your PDD with the specific constraints of **DreamHost Shared Unlimited** hosting.
-
-# Technical Design Document: Real Estate ERP/CRM
-
-## 1. System Architecture Overview
-
-The system follows a **Decoupled Client-Server Architecture** to optimize for DreamHost Shared Hosting limitations while providing a modern user experience.
-
-- **Frontend:** React.js (Single Page Application).
-- **Backend API:** Modular PHP (Restful API).
-- **Database:** MySQL (Relational).
-- **AI Integration:** Gemini 1.5 Flash via REST API.
+This **Technical Design Document (TDD)** translates the functional requirements of the **Inner Sparc Realty Hub (ISRH)** into a scalable, type-safe system architecture. It prioritizes "free tier" efficiency and robust data security.
 
 ---
 
-## 2. Technical Stack Specifications
+# Technical Design Document: Inner Sparc Realty Hub (ISRH)
 
-| Layer              | Technology            | Version      | Hosting Detail                                 |
-| ------------------ | --------------------- | ------------ | ---------------------------------------------- |
-| **Frontend**       | React + Vite          | 18.x / 5.x   | Build locally; deploy `dist` to `/public_html` |
-| **Backend**        | PHP (Lumen or Slim)   | 8.2+         | Native DreamHost PHP runtime                   |
-| **Database**       | MySQL                 | 8.0+         | Hosted on DreamHost MySQL Grid                 |
-| **Authentication** | JWT (JSON Web Tokens) | Lcobucci/JWT | Stateless auth (no PHP sessions needed)        |
-| **AI Processing**  | Google Gemini API     | v1.5 Flash   | Free tier (up to 15 RPM)                       |
-
----
-
-## 3. Database Design (Data Schema)
-
-Since we are tracking leads across different sources (TikTok, FB) and roles (Agent, Supervisor), the relational structure is critical.
-
-### 3.1 Primary Entities
-
-- **`users`**: `id`, `username`, `password_hash`, `role` (ENUM), `team_id`, `is_active`.
-- **`leads`**: `id`, `full_name`, `phone_masked`, `email`, `source_url`, `assigned_to` (FK), `ai_score`, `status`.
-- **`teams`**: `id`, `supervisor_id` (FK), `team_name`.
-- **`dp_tracker`**: `id`, `lead_id` (FK), `total_amount`, `paid_amount`, `next_due_date`.
+## 1. Tech Stack & Infrastructure
+* **Framework:** Next.js (App Router) + TypeScript.
+* **Styling:** Tailwind CSS + Shadcn/UI (for high-density dashboard components).
+* **Backend/Database:** **Supabase** (PostgreSQL, Auth, and Row Level Security).
+* **Messaging & Storage:** **Telegram Bot API** (Messaging notifications and "unlimited" image/video hosting via `file_id`).
+* **Media Optimization:** **Cloudinary** (For generating project thumbnails and UI assets).
+* **Deployment:** Vercel (Frontend) + Supabase Edge Functions (Webhooks).
 
 ---
 
-## 4. API & Integration Design
+## 2. System Architecture
+The system follows a **Serverless/Edge** architecture to ensure low latency and zero server maintenance costs.
 
-### 4.1 The PHP "Bridge" Logic
-
-Because we cannot connect React directly to MySQL, PHP acts as the secure middleman.
-
-- **Endpoint:** `POST /api/leads/score`
-- **Logic Flow:** 1. Receive Lead Data from React.
-
-2. PHP calls Gemini API with a specialized prompt.
-3. Gemini returns a JSON score (e.g., `{ "score": 85, "class": "Hot" }`).
-4. PHP saves the score and lead data into MySQL.
-
-### 4.2 Security: Data Masking Implementation
-
-To protect lead PII (Personally Identifiable Information) from Admins:
-
-- **Frontend Logic:** React checks the `user.role` from the JWT.
-- **Backend Logic:** The PHP API will redact strings before sending them to the client.
-- _Formula:_ `substr($phone, 0, 4) . "****" . substr($phone, -2)`
+### A. The Telegram Storage Bridge
+To avoid storage limits on free-tier databases:
+1.  User uploads a document/image via the CRM.
+2.  The Next.js Server Action forwards the file to a private **Telegram Channel** via the Bot.
+3.  Telegram returns a unique `file_id` and `message_id`.
+4.  Only the `file_id` is stored in Supabase.
+5.  When viewed, the system generates a temporary download link via the Bot.
 
 ---
 
-## 5. Deployment Plan (Agile/Terminal)
+## 3. Database Schema (PostgreSQL)
 
-### 5.1 Environment Setup
+### `profiles` (Extended User Data)
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| `id` | UUID | Primary Key (links to `auth.users`). |
+| `role` | enum | superadmin, admin, manager, supervisor, agent, sao, it_admin. |
+| `team_id` | UUID | Foreign Key to `teams`. |
+| `license_status` | string | status of agent licensing (Applicant, Licensed). |
 
-1. **Local:** Install Node.js (for React) and XAMPP/MAMP (for PHP/MySQL).
-2. **Staging:** Create a subdomain `dev.yourdomain.com` on DreamHost for testing.
-3. **Production:** Main domain `yourdomain.com`.
+### `leads` (Core Entity)
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| `id` | UUID | Primary Key. |
+| `full_name` | string | Encrypted or restricted via RLS. |
+| `phone` | string | Encrypted or restricted via RLS. |
+| `source` | string | TikTok, FB, YouTube, etc. |
+| `score` | integer | 0-100 (Calculated by AI engine). |
+| `assigned_to` | UUID | FK to `profiles`. |
+| `status` | enum | Inquiring, PKS, Site Tour, Reserved, Closed. |
 
-### 5.2 Terminal Deployment Script
-
-We will use a **Post-Receive Hook** in Git. Whenever you run `git push dreamhost main`:
-
-1. The server receives the code.
-2. The script moves the PHP files to the `/api` folder.
-3. The script moves the React `dist` files to the `/public_html` folder.
+### `dp_milestones` (Financial Tracking)
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| `lead_id` | UUID | FK to `leads`. |
+| `total_amount` | decimal | Total downpayment required. |
+| `paid_amount` | decimal | Amount currently settled. |
+| `receipt_telegram_id` | string | `file_id` of the receipt hosted on Telegram. |
 
 ---
 
-## 6. Testing Strategy (Agile Sprints)
+## 4. Core Logic Implementations
 
-- **Unit Testing:** Use **Jest** for React component logic.
-- **API Testing:** Use **Postman** or **Insomnia** to verify PHP endpoints before connecting them to React.
-- **User Acceptance (UAT):** Real agents test the "Closer's Corner" dashboard on their mobile phones to ensure field usability.
+### 4.1 PII Masking Utility
+Data masking is handled at the **Application Level** via a TypeScript utility.
+
+```typescript
+// utils/masking.ts
+export const maskPII = (value: string, role: string, isOwner: boolean) => {
+  if (role === 'superadmin' || isOwner) return value;
+  if (value.length < 5) return "****";
+  // Masks middle digits: 0917****89
+  return `${value.slice(0, 4)}****${value.slice(-2)}`;
+};
+```
+
+### 4.2 AI Lead Scoring Engine
+The "Temperature" is calculated using a weighted engagement formula:
+$$Score = (E \times 0.5) + (R \times 0.3) + (B \times 0.2)$$
+Where:
+* **E (Engagement):** Number of messages/clicks.
+* **R (Recency):** Days since last interaction (Inverse).
+* **B (Budget):** Match with property price range.
+
+### 4.3 Duplicate Detection
+Implemented via a **PostgreSQL Trigger** or a Supabase RPC to prevent lead poaching.
+* **Logic:** Before `INSERT`, query `leads` where `phone` or `email` matches. If exists, return the ID of the original Agent and block the write.
 
 ---
 
-[Building a Full Stack CRM with PHP and AI](https://www.youtube.com/watch?v=8zh7ZEG9GEA)
+## 5. API & Integration Design
 
-This video is highly relevant as it demonstrates the exact process of building a functional CRM using PHP and AI tools for free, aligning perfectly with your goal of a cost-effective, AI-driven real estate hub.
+### 5.1 Telegram Bot Webhook
+* **Endpoint:** `/api/webhooks/telegram`
+* **Function:** Listens for "Site Tour" confirmations or "Reservation" image uploads. When an agent sends a command like `/dp [LeadID] [Amount]`, the system updates the `dp_milestones` table automatically.
+
+### 5.2 Next.js Server Actions
+* **`assignLead()`:** Logic to handle the **Lead Load Balancer** for Supervisors. It checks the current "Hot" lead count of all agents in a team and assigns the new lead to the one with the lowest load.
+
+---
+
+## 6. Security (Row Level Security - RLS)
+Supabase RLS policies ensure that data visibility is strictly enforced at the database level.
+
+* **Agent Policy:** `SELECT` leads WHERE `assigned_to = auth.uid()`.
+* **Supervisor Policy:** `SELECT` leads WHERE `team_id = (SELECT team_id FROM profiles WHERE id = auth.uid())`.
+* **IT Admin Policy:** `SELECT` leads, but `full_name` and `phone` columns are excluded from the view.
+
+---
+
+## 7. Performance & Optimization
+* **Caching:** Use Next.js `revalidateTag` for the **Project Listing** gallery to ensure inventory updates are reflected instantly across all agent dashboards.
+* **Bundle Size:** Utilize `lucide-react` for icons and dynamic imports for heavy charts (Recharts) in the **Strategy Room** dashboard.
+
+---
+
+### Implementation Roadmap
+1.  **Phase 1:** Setup Supabase Auth and RBAC Roles.
+2.  **Phase 2:** Build the Lead Table with PII Masking logic.
+3.  **Phase 3:** Integrate Telegram Bot for real-time notifications.
+4.  **Phase 4:** Develop the DP Tracker and AI Scoring cron jobs.
+
+Would you like the code for the **Supabase RLS Policy** that handles the PII masking for the Admin role?

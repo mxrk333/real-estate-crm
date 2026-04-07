@@ -1,92 +1,63 @@
-This **Technical Design Document (TDD)** serves as the engineering blueprint for the **Real Estate ERP/CRM**. It bridges the high-level goals of your PDD with the specific constraints of **DreamHost Shared Unlimited** hosting.
+Balancing a side project with a full-time software engineering job is a marathon, not a sprint. Since you have **28 hours a week** (4 hours x 7 days), your "Part-Time Velocity" is roughly equivalent to **50-60% of a full-time developer's output**, accounting for the "brain fog" that hits after a full workday.
 
-# Technical Design Document: Real Estate ERP/CRM
-
-## 1. System Architecture Overview
-
-The system follows a **Decoupled Client-Server Architecture** to optimize for DreamHost Shared Hosting limitations while providing a modern user experience.
-
-- **Frontend:** React.js (Single Page Application).
-- **Backend API:** Modular PHP (Restful API).
-- **Database:** MySQL (Relational).
-- **AI Integration:** Gemini 1.5 Flash via REST API.
+To keep this achievable without burnout, I’ve mapped out a **12-week (3-month) timeline**. This uses **2-week sprints**, giving you enough "night-time" cycles to handle complex bugs without falling behind.
 
 ---
 
-## 2. Technical Stack Specifications
+### 📅 The 12-Week Development Roadmap
 
-| Layer              | Technology            | Version      | Hosting Detail                                 |
-| ------------------ | --------------------- | ------------ | ---------------------------------------------- |
-| **Frontend**       | React + Vite          | 18.x / 5.x   | Build locally; deploy `dist` to `/public_html` |
-| **Backend**        | PHP (Lumen or Slim)   | 8.2+         | Native DreamHost PHP runtime                   |
-| **Database**       | MySQL                 | 8.0+         | Hosted on DreamHost MySQL Grid                 |
-| **Authentication** | JWT (JSON Web Tokens) | Lcobucci/JWT | Stateless auth (no PHP sessions needed)        |
-| **AI Processing**  | Google Gemini API     | v1.5 Flash   | Free tier (up to 15 RPM)                       |
+#### **Month 1: The Core Architecture**
+*Focus: Getting the "plumbing" right so you don't have to refactor later.*
 
----
-
-## 3. Database Design (Data Schema)
-
-Since we are tracking leads across different sources (TikTok, FB) and roles (Agent, Supervisor), the relational structure is critical.
-
-### 3.1 Primary Entities
-
-- **`users`**: `id`, `username`, `password_hash`, `role` (ENUM), `team_id`, `is_active`.
-- **`leads`**: `id`, `full_name`, `phone_masked`, `email`, `source_url`, `assigned_to` (FK), `ai_score`, `status`.
-- **`teams`**: `id`, `supervisor_id` (FK), `team_name`.
-- **`dp_tracker`**: `id`, `lead_id` (FK), `total_amount`, `paid_amount`, `next_due_date`.
+* **Sprint 1 (Weeks 1-2): Foundation & Auth**
+    * **Week 1:** Initialize Next.js, Tailwind, and Supabase. Setup the Sidebar/Layout shell.
+    * **Week 2:** Implement Supabase Auth. Define the `profiles` table and the RBAC (Role-Based Access Control) middleware.
+    * **Goal:** You can log in and see a different sidebar based on your role.
+* **Sprint 2 (Weeks 3-4): The Lead Engine & Security**
+    * **Week 3:** Create `leads` table and "All Leads" UI. Implement the **PII Masking utility**.
+    * **Week 4:** Build the **Duplicate Detection** logic and the basic Lead Entry form.
+    * **Goal:** A secure CRM where agents can add leads, and admins see masked data.
 
 ---
 
-## 4. API & Integration Design
+#### **Month 2: Intelligence & Integration**
+*Focus: Adding the "Magic" features (AI and Messaging).*
 
-### 4.1 The PHP "Bridge" Logic
-
-Because we cannot connect React directly to MySQL, PHP acts as the secure middleman.
-
-- **Endpoint:** `POST /api/leads/score`
-- **Logic Flow:** 1. Receive Lead Data from React.
-
-2. PHP calls Gemini API with a specialized prompt.
-3. Gemini returns a JSON score (e.g., `{ "score": 85, "class": "Hot" }`).
-4. PHP saves the score and lead data into MySQL.
-
-### 4.2 Security: Data Masking Implementation
-
-To protect lead PII (Personally Identifiable Information) from Admins:
-
-- **Frontend Logic:** React checks the `user.role` from the JWT.
-- **Backend Logic:** The PHP API will redact strings before sending them to the client.
-- _Formula:_ `substr($phone, 0, 4) . "****" . substr($phone, -2)`
+* **Sprint 3 (Weeks 5-6): AI Lead Scoring (The "Brain")**
+    * **Week 5:** Connect Gemini API. Write the prompt logic for "Lead Temperature" scoring.
+    * **Week 6:** Create the **Closer’s Corner Dashboard**. Build the AI-prioritized "Top 5" task list.
+    * **Goal:** The system automatically tells agents which leads are 🔥 "Hot."
+* **Sprint 4 (Weeks 7-8): Telegram Storage & Alerts**
+    * **Week 7:** Setup Telegram Bot webhook. Implement "New Lead" push notifications to agents.
+    * **Week 8:** Build the "Telegram as Storage" bridge—uploading receipts/images to a channel and saving the ID.
+    * **Goal:** Real-time mobile alerts and "unlimited" free image hosting.
 
 ---
 
-## 5. Deployment Plan (Agile/Terminal)
+#### **Month 3: Operations & Launch**
+*Focus: Financial tracking, project data, and workforce management.*
 
-### 5.1 Environment Setup
-
-1. **Local:** Install Node.js (for React) and XAMPP/MAMP (for PHP/MySQL).
-2. **Staging:** Create a subdomain `dev.yourdomain.com` on DreamHost for testing.
-3. **Production:** Main domain `yourdomain.com`.
-
-### 5.2 Terminal Deployment Script
-
-We will use a **Post-Receive Hook** in Git. Whenever you run `git push dreamhost main`:
-
-1. The server receives the code.
-2. The script moves the PHP files to the `/api` folder.
-3. The script moves the React `dist` files to the `/public_html` folder.
+* **Sprint 5 (Weeks 9-10): Financials (DP Tracker) & Projects**
+    * **Week 9:** Build the **Lead Milestone (DP Tracker)** ledger. Add progress bars for payments.
+    * **Week 10:** Build the **Project Listing Gallery** and "Other Materials" library for Agent Guides.
+    * **Goal:** You can now track the money and provide training resources to agents.
+* **Sprint 6 (Weeks 11-12): Workforce & UI Polish**
+    * **Week 11:** Implement **Workforce Management** (Team CRUD) and the Licensing Tracker.
+    * **Week 12:** Final UI polish (Shadcn/UI components), IT Ticketing form, and Vercel deployment.
+    * **Goal:** The system is ready for the first batch of users.
 
 ---
 
-## 6. Testing Strategy (Agile Sprints)
+### 💡 Strategy for the "4-Hour Evening"
+Since you’re already coding all day, use these **Software Engineer "Cheat Codes"** to stay productive:
 
-- **Unit Testing:** Use **Jest** for React component logic.
-- **API Testing:** Use **Postman** or **Insomnia** to verify PHP endpoints before connecting them to React.
-- **User Acceptance (UAT):** Real agents test the "Closer's Corner" dashboard on their mobile phones to ensure field usability.
+1.  **The 20-Minute "Warm-up":** Don't start coding immediately. Spend the first 20 minutes reviewing your TDD and the specific JIRA-style task for the night.
+2.  **No-Code Weekends:** Use Saturdays for "Deep Work" (Architecting DB schemas or complex AI prompts). Use weekday evenings for "UI/Frontend" tasks which are usually less mentally taxing.
+3.  **The "Context Carry-over":** Before you close your laptop at night, leave a `TODO:` comment in your code exactly where you need to start the next day. This kills the "start-up friction."
+4.  **Leverage Shadcn/UI:** Do not build components from scratch. Use **Shadcn** or **Radix UI** to save 40+ hours of CSS work.
 
----
+### 🛑 Buffer & Health Check
+* **Week 13 (Optional):** Keep this as a "Buffer Week." In real estate, requirements often shift (e.g., a new field needed for Pag-IBIG processing). 
+* **The "Burnout Rule":** If your full-time job has a "crunch week," **skip the side project.** Missing 3 days won't kill the project; burning out will.
 
-[Building a Full Stack CRM with PHP and AI](https://www.youtube.com/watch?v=8zh7ZEG9GEA)
-
-This video is highly relevant as it demonstrates the exact process of building a functional CRM using PHP and AI tools for free, aligning perfectly with your goal of a cost-effective, AI-driven real estate hub.
+Does this 12-week pace feel realistic given your current workload at your day job?

@@ -1,103 +1,92 @@
-# Product Design Document: Real Estate ERP/CRM
+This unified **Product Design Document (PDD)** merges your technical requirements (Next.js, TypeScript, Telegram integration) with the advanced operational logic of the Real Estate ERP/CRM. It is optimized for high-density UI generation in tools like STICH or Figma AI.
+
+---
+
+# Product Design Document: Inner Sparc Realty Hub (ISRH)
 
 ## 1. Executive Summary
-
-**Real Estate ERP/CRM** is an integrated Real Estate ERP and CRM designed to streamline property discovery and lead conversion. It leverages AI to prioritize high-intent buyers, protects agent data through advanced masking, and manages the entire sales lifecycle—from social media inquiry to final downpayment tracking and agent licensing.
-
----
-
-## 2. User Roles & Access Control (RBAC)
-
-To prevent "lead poaching" and ensure data integrity, the system uses a strict hierarchy of visibility.
-
-| Role           | Visibility Scope | PII Access (Name/Phone/Email)        | Primary Focus                                    |
-| -------------- | ---------------- | ------------------------------------ | ------------------------------------------------ |
-| **Superadmin** | **Global**       | ✅ Full Access                       | Total oversight, system config, and audits.      |
-| **Admin**      | **Operational**  | ❌ **Masked** (e.g., 0917\*\*\*\*89) | Inventory management and company-wide reporting. |
-| **Manager**    | **Department**   | ✅ Full (Team Only)                  | Strategy, ROI, and recruitment pipeline.         |
-| **Supervisor** | **Team**         | ✅ Full (Team Only)                  | Coaching agents and lead distribution.           |
-| **Agent**      | **Personal**     | ✅ Full (Own Leads)                  | Lead nurturing and closing sales.                |
-| **IT Admin**   | **System**       | ❌ Masked                            | Technical maintenance and bug resolution.        |
+**ISRH** is an AI-powered Real Estate ERP/CRM designed to bridge the gap between social media lead generation and final downpayment (DP) tracking. It focuses on **Zero-Poaching** through PII masking, **AI Lead Scoring** to prioritize high-intent buyers, and a **Telegram-driven** communication architecture to minimize infrastructure costs.
 
 ---
 
-## 3. The Core Product: AI Lead Management
+## 2. System Hierarchy & Security (RBAC)
+To ensure data integrity and privacy, the system implements **PII Masking** (Personally Identifiable Information). Only the lead owner sees full contact details.
 
-The heart of the system is a dynamic CRM that classifies leads based on behavior and profile.
-
-### 3.1 AI Agent & Lead Scoring
-
-The AI analyzes lead data (source, profile, and engagement) to assign a "Temperature":
-
-- 🔥 **Hot:** High intent, complete profile, frequent interaction.
-- ☀️ **Warm:** Interested but requires nurturing or document assistance.
-- ❄️ **Cold:** No response or low budget/mismatch.
-
-### 3.2 Status Pipeline & Source Tracking
-
-- **Lead Journey:** Inquiring → PKS (Product Knowledge Seminar) → Site Tour → Reservation → Document Submission.
-- **Lead Types:** Local, OFW, or Self-Employed.
-- **Source Logging:** Tracks origin URLs from TikTok, Facebook, YouTube, and more.
+| Role | Visibility Scope | PII Access | Primary UI Focus |
+| :--- | :--- | :--- | :--- |
+| **Superadmin** | Global | ✅ Full | System audits & Global Workforce management. |
+| **IT Admin** | System | ❌ Masked | Bug resolution & IT Ticketing. |
+| **Manager** | Department | ✅ Team Only | Source ROI & Recruitment Funnel. |
+| **Supervisor** | Team | ✅ Team Only | Lead Load Balancing & "At-Risk" flags. |
+| **Agent** | Personal | ✅ Own Leads | The "Closer’s Corner" & Lead Nurturing. |
+| **SAO** | Resources | ✅ Restricted | Management of "Other Materials" & Agent Guides. |
 
 ---
 
-## 4. Role-Specific Dashboard Epics
+## 3. The Dashboard Ecosystem (Epic Views)
+The UI dynamically shifts based on the logged-in role to present the most relevant "Epic."
 
-### 4.1 Epic: "The Closer’s Corner" (Agent Dashboard)
+### 3.1 The "Pulse" Dashboard (Universal Components)
+* **KPI Tiles:** Total Leads, Conversion Rate, Total DP Tracked, Most Inquired Models, Top Projects.
+* **Leaderboard:** Top Teams and Top Agents ranking.
+* **Recent Activity:** A combined feed of Recent Leads and Recent Memos.
 
-- **Next-Best-Action (NBA) Engine:** AI-prioritized "Top 5" tasks for the day.
-- **Personal Commission Calculator:** Visualizes potential earnings based on the current pipeline.
-- **Quick-Response Templates:** One-click WhatsApp/SMS triggers for PKS invites or follow-ups.
-
-### 4.2 Epic: "The Team Pilot" (Supervisor Dashboard)
-
-- **Lead Load Balancer:** View of "Hot" lead distribution across the team to prevent burnout.
-- **"At-Risk" Flags:** Automated alerts for leads that haven't been contacted in 48 hours.
-- **Real-Time Activity Feed:** Live updates on team successes (e.g., "Agent X just booked a Site Tour").
-
-### 4.3 Epic: "The Strategy Room" (Manager Dashboard)
-
-- **Source ROI Analytics:** Which platform (TikTok vs. FB) is actually closing sales?
-- **Inventory Heatmap:** Sales velocity by location (Cavite, Batangas, Laguna, Rizal).
-- **Recruitment Funnel:** Tracking new agents from "Applicant" to "Licensed Professional."
+### 3.2 Role-Specific Epics
+* **The Closer’s Corner (Agent):** Features a "Next-Best-Action" (NBA) engine powered by AI, showing the top 5 tasks (e.g., "Follow up with Hot Lead"). Includes a personal commission calculator.
+* **The Team Pilot (Supervisor):** Visualizes lead distribution across agents to prevent burnout and flags "At-Risk" leads (no contact > 48hrs).
+* **The Strategy Room (Manager):** ROI Analytics comparing lead sources (TikTok, FB, YouTube) and an Inventory Heatmap (Cavite, Batangas, Laguna, Rizal).
 
 ---
 
-## 5. Operations & Workforce Management
+## 4. Core Functional Modules
 
-### 5.1 Project & Model House Inventory
+### 4.1 AI Lead Management & Scoring
+* **Temperature Logic:** AI assigns 🔥 **Hot**, ☀️ **Warm**, or ❄️ **Cold** status based on interaction frequency and budget match.
+* **The Pipeline:** Inquiry → PKS (Product Knowledge Seminar) → Site Tour → Reservation → Document Submission.
+* **Duplicate Detection:** Blocks entries with existing Phone/Email, automatically attributing them to the original agent.
 
-- **Location-Based Filtering:** Dynamic property listings for the Philippines market.
-- **Media Gallery:** High-res images and videos for specific house models.
+### 4.2 Lead Milestone (DP Tracker)
+A specialized ledger for tracking installment-based downpayments.
+* **Features:** Payment schedule visualization, "Amount Paid" vs. "Remaining Balance," and digital receipt attachment via Telegram.
 
-### 5.2 Communication & Memos
+### 4.3 Workforce & Resource Management
+* **Licensing Tracker:** Monitors the onboarding stages of new recruits from "Applicant" to "Licensed Professional."
+* **Other Materials:** A restricted library for Real Estate Agent Guides, training links, and legal handbooks (Managed by Superadmin/SAO).
 
-- **Memo Release:** Official digital announcements from Superadmin/Management.
-- **Multimedia Messaging:** Internal chat supporting Voice Messages, Video, and Images for team-specific or company-wide updates.
-
-### 5.3 Workforce & Resources
-
-- **Licensing Tracker:** Monitors the licensing stages of new recruits.
-- **Knowledge Base:** A "Materials & Resources" section for handbooks and quick links to training channels.
-
----
-
-## 6. Financials & Technical Support
-
-### 6.1 Downpayment (DP) Tracker
-
-- A ledger for clients and agents to track payment milestones throughout the sales process, ensuring no client falls behind on their schedule.
-
-### 6.2 IT Ticketing System
-
-- **Direct Reporting:** Users can flag bugs or UI issues.
-- **Resolution Pipeline:** IT Admins manage tickets to ensure 100% system uptime.
+### 4.4 Communication (Telegram Integration)
+* **Messaging Service:** Uses Telegram for all system notifications, lead alerts, and multimedia messaging (Voice/Video/Images).
+* **Centralized Memos:** Digital announcements from management with "Mark as Read" receipts.
 
 ---
 
-## 7. Data Security & Conflict Prevention
-
-- **Duplicate Detection:** The system blocks the entry of a lead if the Phone/Email already exists, attributing the lead to the original agent.
-- **PII Masking:** Admins see high-level trends but cannot see the contact details of leads assigned to specific agents/teams.
+## 5. Technical Architecture (Free-Tier Optimized)
+* **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS (for rapid UI development).
+* **Database:** **Supabase** (PostgreSQL) - Handles relational data, RBAC, and real-time triggers.
+* **Storage (Images/Messages):** * **Primary:** Telegram Bot API (using Telegram as an "unlimited" file server by storing `file_id` in Supabase).
+    * **Secondary:** Cloudinary (for web-optimized project listing thumbnails).
+* **Infrastructure:** Vercel (Frontend hosting) + Supabase (Backend/Database).
 
 ---
+
+## 6. UI/UX Design Prompt (For STICH/Figma AI)
+> "Design a complex, high-density Real Estate ERP/CRM Dashboard named 'ISRH'. 
+> 
+> **Layout:** Sidebar-driven navigation with a clean, 'Enterprise Dark' aesthetic (Primary: #0F172A, Accent: #6366F1).
+> 
+> **Key Screens to Generate:**
+> 1. **The Closer’s Corner:** A dashboard showing an 'AI Priority' list of 5 leads with 🔥/☀️/❄️ icons, a commission progress bar, and 'Quick Action' buttons for WhatsApp/Telegram.
+> 2. **Lead Milestone Table:** A financial ledger view showing 'DP Tracking' with progress bars for each client's payment status.
+> 3. **PII Masking Example:** A list of leads where phone numbers are shown as '0917****89' for Admin views.
+> 4. **Project Gallery:** A grid of property models with location tags (Cavite, Rizal) and 'Inquiry Volume' badges.
+> 5. **Workforce Management:** A 'Team view' showing agent performance tiles and a 'Licensing Status' stepper for new recruits."
+
+---
+
+## 7. Operational Workflow
+1.  **Lead Capture:** Lead enters via social media (Source logged) → System checks for duplicates.
+2.  **AI Analysis:** Lead is scored and assigned to an Agent's "Closer’s Corner."
+3.  **Nurturing:** Agent uses Telegram-linked triggers to invite the lead to a PKS or Site Tour.
+4.  **Conversion:** Once reserved, the lead moves to "Lead Milestone" for DP tracking.
+5.  **Feedback:** Any UI issues or bugs are reported via the **IT Reporting** module in Settings.
+
+Would you like to focus on the database schema for the **Duplicate Detection** or the **Telegram Bot** logic first?
