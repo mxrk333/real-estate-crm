@@ -1,0 +1,252 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Executive Suite palette */
+  --color-background: #f8f9fa;
+  --color-on-primary-container: #90b0f5;
+  --color-primary: #002b64;
+  --color-primary-container: #1d427f;
+  --color-primary-fixed: #d8e2ff;
+  --color-tertiary-fixed: #ffdbd1;
+  --color-tertiary: #591400;
+  --color-on-secondary-fixed: #171c20;
+  --color-error-container: #ffdad6;
+  --color-on-primary-fixed-variant: #224583;
+  --color-on-secondary: #ffffff;
+  --color-tertiary-fixed-dim: #ffb59f;
+  --color-on-tertiary: #ffffff;
+  --color-primary-fixed-dim: #aec6ff;
+  --color-surface-bright: #f8f9fa;
+  --color-on-error-container: #93000a;
+  --color-on-error: #ffffff;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-on-background: #191c1d;
+  --color-secondary-container: #dce0e6;
+  --color-on-surface: #191c1d;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-tint: #3c5d9c;
+  --color-on-secondary-fixed-variant: #42474c;
+  --color-on-tertiary-fixed: #3a0a00;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface: #f8f9fa;
+  --color-tertiary-container: #802100;
+  --color-surface-container: #edeeef;
+  --color-secondary-fixed: #dfe3e9;
+  --color-on-primary: #ffffff;
+  --color-secondary-fixed-dim: #c2c7cd;
+  --color-outline-variant: #c4c5d5;
+  --color-on-secondary-container: #5e6368;
+  --color-secondary: #5a5f64;
+  --color-on-primary-fixed: #001a42;
+  --color-surface-dim: #d9dadb;
+  --color-error: #ba1a1a;
+  --color-on-surface-variant: #444653;
+  --color-inverse-surface: #2e3132;
+  --color-on-tertiary-container: #ff9474;
+  --color-surface-variant: #e1e3e4;
+  --color-surface-container-low: #f3f4f5;
+  --color-on-tertiary-fixed-variant: #852402;
+  --color-inverse-primary: #aec6ff;
+  --color-outline: #747685;
+  --color-surface-container-lowest: #ffffff;
+
+  --radius-sm: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-3xl: 0.75rem;
+
+  --font-headline: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-label: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Workforce / Leads (ISR Architecture) palette — prefixed wfm- */
+  --color-wfm-surface-container-low: #f2f3ff;
+  --color-wfm-on-primary-container: #7c839b;
+  --color-wfm-background: #faf8ff;
+  --color-wfm-on-background: #131b2e;
+  --color-wfm-on-secondary-fixed: #0f0069;
+  --color-wfm-surface-container-highest: #dae2fd;
+  --color-wfm-on-surface-variant: #45464d;
+  --color-wfm-primary-fixed-dim: #bec6e0;
+  --color-wfm-primary-container: #131b2e;
+  --color-wfm-on-tertiary-fixed: #002113;
+  --color-wfm-on-secondary-container: #fffbff;
+  --color-wfm-on-tertiary-container: #009668;
+  --color-wfm-secondary-container: #645efb;
+  --color-wfm-tertiary-container: #002113;
+  --color-wfm-secondary-fixed: #e2dfff;
+  --color-wfm-error: #ba1a1a;
+  --color-wfm-inverse-surface: #283044;
+  --color-wfm-on-error-container: #93000a;
+  --color-wfm-surface-container-high: #e2e7ff;
+  --color-wfm-outline-variant: #c6c6cd;
+  --color-wfm-inverse-on-surface: #eef0ff;
+  --color-wfm-on-tertiary: #ffffff;
+  --color-wfm-secondary-fixed-dim: #c3c0ff;
+  --color-wfm-outline: #76777d;
+  --color-wfm-on-tertiary-fixed-variant: #005236;
+  --color-wfm-on-primary-fixed: #131b2e;
+  --color-wfm-inverse-primary: #bec6e0;
+  --color-wfm-surface-tint: #565e74;
+  --color-wfm-surface-bright: #faf8ff;
+  --color-wfm-on-primary-fixed-variant: #3f465c;
+  --color-wfm-surface: #faf8ff;
+  --color-wfm-error-container: #ffdad6;
+  --color-wfm-secondary: #4b41e1;
+  --color-wfm-on-secondary: #ffffff;
+  --color-wfm-surface-dim: #d2d9f4;
+  --color-wfm-tertiary-fixed: #6ffbbe;
+  --color-wfm-primary: #000000;
+  --color-wfm-surface-container-lowest: #ffffff;
+  --color-wfm-surface-container: #eaedff;
+  --color-wfm-on-secondary-fixed-variant: #3323cc;
+  --color-wfm-primary-fixed: #dae2fd;
+  --color-wfm-tertiary-fixed-dim: #4edea3;
+  --color-wfm-on-error: #ffffff;
+  --color-wfm-tertiary: #000000;
+  --color-wfm-on-primary: #ffffff;
+  --color-wfm-on-surface: #131b2e;
+  --color-wfm-surface-variant: #dae2fd;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.material-symbols-filled {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.executive-btn-gradient {
+  background: linear-gradient(135deg, #002b64 0%, #1d427f 100%);
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-headline);
+}
+
+.wfm-root h1,
+.wfm-root h2,
+.wfm-root h3 {
+  font-family: var(--font-body);
+}
+
+/* “Building” placeholder — house loader */
+@keyframes house-loader-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes house-loader-draw {
+  0% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes house-loader-crane {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes house-loader-dot {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.65);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.house-loader__svg {
+  display: block;
+  animation: house-loader-float 2.8s ease-in-out infinite;
+}
+
+.house-loader__roof,
+.house-loader__walls {
+  animation: house-loader-draw 2s ease-in-out infinite;
+}
+
+.house-loader__roof {
+  animation-delay: 0s;
+}
+
+.house-loader__walls {
+  animation-delay: 0.25s;
+}
+
+.house-loader__window {
+  animation: house-loader-draw 1.6s ease-in-out infinite;
+}
+
+.house-loader__window--l {
+  animation-delay: 0.4s;
+}
+
+.house-loader__window--r {
+  animation-delay: 0.7s;
+}
+
+.house-loader__door {
+  animation: house-loader-draw 2.2s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+
+.house-loader__crane-arm {
+  transform-origin: 95px 8px;
+  animation: house-loader-crane 2.2s ease-in-out infinite;
+}
+
+.house-loader__dot {
+  display: block;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  animation: house-loader-dot 1.2s ease-in-out infinite;
+}
+
+.house-loader__dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.house-loader__dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .house-loader__svg,
+  .house-loader__roof,
+  .house-loader__walls,
+  .house-loader__window,
+  .house-loader__door,
+  .house-loader__crane-arm,
+  .house-loader__dot {
+    animation: none;
+  }
+}
