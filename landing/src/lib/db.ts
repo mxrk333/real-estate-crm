@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { Pool, neonConfig } from '@neondatabase/serverless';
+import { neonConfig } from '@neondatabase/serverless';
 import { PrismaNeon } from '@prisma/adapter-neon';
+// @ts-ignore
 import { WebSocket } from 'ws';
 
 // Required for Neon serverless in Node.js environments
@@ -19,8 +20,7 @@ const createPrismaClient = () => {
     console.error("CREATING_PRISMA_CLIENT: DATABASE_URL is undefined");
     throw new Error("DATABASE_URL is required");
   }
-  const pool = new Pool({ connectionString: url });
-  const adapter = new PrismaNeon(pool);
+  const adapter = new PrismaNeon({ connectionString: url } as any);
   console.log("CREATING_PRISMA_CLIENT: SUCCESS");
   return new PrismaClient({ adapter });
 };
