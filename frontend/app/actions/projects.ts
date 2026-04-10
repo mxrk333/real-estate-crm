@@ -15,6 +15,11 @@ export async function fetchProjects() {
   try {
     const properties = await db.property.findMany({
       orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: { inquiries: true }
+        }
+      }
     });
     
     // Map Prisma models to the UI ProjectCard shape
@@ -22,7 +27,7 @@ export async function fetchProjects() {
       id: property.id,
       name: property.name,
       location: property.location,
-      inquiries: property.inquiries?.length || 0,
+      inquiries: property._count?.inquiries || 0,
       imageUrl: property.imageUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuB1OcRfucn2zA9U8jqahihXviks4q7YX1Ova2bCyNhvOiJxYSt1nv5-vZxNoPHfPflL7N9lcNZyWe3UG0lcLlGs9IWti2jfVl_pwLhUMv9a3LNCaWcOSj9ZxGZT9Ppkjg_5NMRQSSrS_r78m5VPRjlci0EU78oLAsCXXfpNnt8dA741tOn7OIBQ5VuPFuUjqpQXu1HSJTfWuqoV2pFBwvdZytpU9Yl1LwAcZPyDZd-1HGjoUGuWrbvEcS05gHXix7rIwFyOPsBWG60", 
       imageAlt: property.imageAlt || "Project Property Image",
       images: property.images || [],
