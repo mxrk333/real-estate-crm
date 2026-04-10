@@ -1,4 +1,4 @@
-import { MaterialIcon } from "@/components/icons/MaterialIcon";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import type { PriorityLead } from "@/types/dashboard";
 
 import { LeadRow } from "./LeadRow";

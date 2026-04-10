@@ -1,0 +1,10 @@
+packages:
+  - frontend
+  - landing
+
+allowBuilds:
+  '@prisma/engines': true
+  cpu-features: false
+  esbuild: true
+  prisma: true
+  ssh2: false

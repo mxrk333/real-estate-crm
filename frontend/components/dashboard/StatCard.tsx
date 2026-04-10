@@ -1,4 +1,4 @@
-import { MaterialIcon } from "@/components/icons/MaterialIcon";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import type { StatMetric } from "@/types/dashboard";
 
 const toneClass = {

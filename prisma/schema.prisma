@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../frontend/prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum PropertyStatus {
+  FOR_SALE
+  FOR_RENT
+  SOLD
+  RENTED
+}
+
+enum PropertyType {
+  HOUSE_AND_LOT
+  CONDOMINIUM
+  TOWNHOUSE
+  VACANT_LOT
+  COMMERCIAL
+}
+
+enum InquiryInterest {
+  BUYING
+  SELLING
+  RENTING
+  INVESTMENT
+  MANAGEMENT
+  OTHER
+}
+
+enum InquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  ARCHIVED
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model Property {
+  id          String         @id @default(cuid())
+  name        String
+  location    String
+  city        String
+  province    String         @default("Cavite")
+  price       Decimal        @db.Decimal(14, 2)
+  status      PropertyStatus @default(FOR_SALE)
+  type        PropertyType   @default(HOUSE_AND_LOT)
+  beds        Int            @default(0)
+  baths       Decimal        @db.Decimal(3, 1) @default(0)
+  sqft        Int            @default(0)
+  description String?        @db.Text
+  imageUrl           String?
+  images             String[]       @default([])
+  imageAlt           String?
+  isFeatured         Boolean        @default(false)
+  isActive           Boolean        @default(true)
+
+  // Extension fields
+  developer          String?
+  exactLocation      String?
+  houseModel         String?
+  constructionStatus String?        @default("Preselling")
+  priority           String?        @default("Standard")
+  commissionRate     String?        @default("5.00% COMM")
+  priceRange         String?
+  tcp                Decimal?       @db.Decimal(14, 2)
+  reservationFee     Decimal?       @db.Decimal(14, 2)
+  requiredSalary     Decimal?       @db.Decimal(14, 2)
+  dpOption           String?
+  driveLink          String?
+
+  agentId     String?
+  agent       Agent?         @relation(fields: [agentId], references: [id])
+  inquiries   Inquiry[]
+
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([city])
+  @@index([isFeatured])
+}
+
+model Agent {
+  id          String    @id @default(cuid())
+  name        String
+  email       String    @unique
+  phone       String?
+  licenseNo   String?   @unique
+  avatarUrl   String?
+  bio         String?   @db.Text
+  isActive    Boolean   @default(true)
+
+  properties  Property[]
+  inquiries   Inquiry[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Inquiry {
+  id               String          @id @default(cuid())
+  name             String
+  email            String 
+  phone            String?
+  subject          String
+  message          String          @db.Text
+  interest         InquiryInterest @default(OTHER)
+  status           InquiryStatus   @default(NEW)
+
+  // Optional link to a specific property
+  propertyId       String?
+  property         Property?       @relation(fields: [propertyId], references: [id])
+
+  // Optional assigned agent
+  agentId          String?
+  agent            Agent?          @relation(fields: [agentId], references: [id])
+
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([status])
+  @@index([email])
+}

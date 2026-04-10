@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { MaterialIcon } from "@/components/icons/MaterialIcon";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { isNavActive } from "@/lib/path-match";
 import type { NavItem } from "@/types/dashboard";
 

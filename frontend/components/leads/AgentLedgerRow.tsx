@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { MaterialIcon } from "@/components/icons/MaterialIcon";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import type { LedgerAgent } from "@/types/leads";
 
 import { LicensingStepper } from "./LicensingStepper";

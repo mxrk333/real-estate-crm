@@ -1,4 +1,4 @@
-import { MaterialIcon } from "@/components/icons/MaterialIcon";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 
 export function TopNav() {
   return (

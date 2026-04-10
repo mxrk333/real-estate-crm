@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
 
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
-import { BuildingFeaturePlaceholder } from "@/components/shared/BuildingFeaturePlaceholder";
+import { ProjectGallery } from "@/components/projects/ProjectGallery";
+
+import { fetchProjects } from "../actions/projects";
 
 export const metadata: Metadata = {
-  title: "Projects | Inner SPARC CRM",
-  description: "Project pipeline — coming soon",
+  title: "Project Gallery | Inner SPARC CRM",
+  description:
+    "A curated showcase of premier Philippine real estate developments.",
 };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const dbProjects = await fetchProjects();
+  
   return (
     <DashboardShell>
-      <BuildingFeaturePlaceholder title="Projects" />
+      <ProjectGallery initialProjects={dbProjects as any} />
     </DashboardShell>
   );
 }
