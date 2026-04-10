@@ -534,8 +534,8 @@ Hello! I am ${project.developer || 'your agent'} and I'd love to share more deta
                   const res = await createProjectAction(formData);
                   if (res.success) {
                     setIsCreateOpen(false);
-                    setFile(null);
-                    setPreview(null);
+                    setFiles([]);
+                    setPreviews([]);
                   }
                 }}
                 className="p-6 space-y-6"
