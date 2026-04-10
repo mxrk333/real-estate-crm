@@ -1,92 +1,76 @@
-This **Technical Design Document (TDD)** serves as the engineering blueprint for the **Real Estate ERP/CRM**. It bridges the high-level goals of your PDD with the specific constraints of **DreamHost Shared Unlimited** hosting.
-
-# Technical Design Document: Real Estate ERP/CRM
-
-## 1. System Architecture Overview
-
-The system follows a **Decoupled Client-Server Architecture** to optimize for DreamHost Shared Hosting limitations while providing a modern user experience.
-
-- **Frontend:** React.js (Single Page Application).
-- **Backend API:** Modular PHP (Restful API).
-- **Database:** MySQL (Relational).
-- **AI Integration:** Gemini 1.5 Flash via REST API.
+To make the **Inner Sparc Realty Hub (ISRH)** development manageable, we’ll break the TDD into a **6-Sprint Agile Roadmap**. Each sprint is designed to deliver a "Minimum Viable Product" (MVP) feature set, ensuring you aren't overwhelmed by the scope.
 
 ---
 
-## 2. Technical Stack Specifications
+## 🏗️ Sprint 1: Foundation & Identity (The "Skeleton")
+**Goal:** Establish the database, authentication, and the core UI shell.
 
-| Layer              | Technology            | Version      | Hosting Detail                                 |
-| ------------------ | --------------------- | ------------ | ---------------------------------------------- |
-| **Frontend**       | React + Vite          | 18.x / 5.x   | Build locally; deploy `dist` to `/public_html` |
-| **Backend**        | PHP (Lumen or Slim)   | 8.2+         | Native DreamHost PHP runtime                   |
-| **Database**       | MySQL                 | 8.0+         | Hosted on DreamHost MySQL Grid                 |
-| **Authentication** | JWT (JSON Web Tokens) | Lcobucci/JWT | Stateless auth (no PHP sessions needed)        |
-| **AI Processing**  | Google Gemini API     | v1.5 Flash   | Free tier (up to 15 RPM)                       |
+* **Task 1.1:** Initialize **Next.js 15** project with TypeScript and Tailwind CSS.
+* **Task 1.2:** Setup **Supabase** project: Create `profiles` table and enable Auth (Email/OTP).
+* **Task 1.3:** Implement **RBAC Middleware**: Create a logic to redirect users based on their `role` (Admin, Agent, etc.).
+* **Task 1.4:** Build the **Navigation Sidebar**: High-density sidebar with all routes mapped out (even if they are empty for now).
 
 ---
 
-## 3. Database Design (Data Schema)
+## 📈 Sprint 2: The Lead Engine (The "Heart")
+**Goal:** Create the basic CRM functionality with security layers.
 
-Since we are tracking leads across different sources (TikTok, FB) and roles (Agent, Supervisor), the relational structure is critical.
-
-### 3.1 Primary Entities
-
-- **`users`**: `id`, `username`, `password_hash`, `role` (ENUM), `team_id`, `is_active`.
-- **`leads`**: `id`, `full_name`, `phone_masked`, `email`, `source_url`, `assigned_to` (FK), `ai_score`, `status`.
-- **`teams`**: `id`, `supervisor_id` (FK), `team_name`.
-- **`dp_tracker`**: `id`, `lead_id` (FK), `total_amount`, `paid_amount`, `next_due_date`.
+* **Task 2.1:** Create the `leads` table with **Row Level Security (RLS)** to ensure Agents only see their own data.
+* **Task 2.2:** Build the **"All Leads" Table**: Implement basic CRUD (Create, Read, Update, Delete).
+* **Task 2.3:** Develop the **PII Masking Utility**: Apply the function to the UI so Admins see masked phone numbers (e.g., `0917****89`).
+* **Task 2.4:** Implement **Duplicate Detection**: A database function that checks for existing Phone/Email before a new lead is saved.
 
 ---
 
-## 4. API & Integration Design
+## 🧠 Sprint 3: AI Intelligence & Analytics (The "Brain")
+**Goal:** Integrate Gemini API for automated lead classification.
 
-### 4.1 The PHP "Bridge" Logic
-
-Because we cannot connect React directly to MySQL, PHP acts as the secure middleman.
-
-- **Endpoint:** `POST /api/leads/score`
-- **Logic Flow:** 1. Receive Lead Data from React.
-
-2. PHP calls Gemini API with a specialized prompt.
-3. Gemini returns a JSON score (e.g., `{ "score": 85, "class": "Hot" }`).
-4. PHP saves the score and lead data into MySQL.
-
-### 4.2 Security: Data Masking Implementation
-
-To protect lead PII (Personally Identifiable Information) from Admins:
-
-- **Frontend Logic:** React checks the `user.role` from the JWT.
-- **Backend Logic:** The PHP API will redact strings before sending them to the client.
-- _Formula:_ `substr($phone, 0, 4) . "****" . substr($phone, -2)`
+* **Task 3.1:** Setup **Gemini 1.5 Flash** API via Google AI Studio.
+* **Task 3.2:** Build the **Scoring Service**: A server action that sends lead activity to Gemini and receives a $Temperature$ score ($0-100$).
+* **Task 3.3:** Create the **Closer’s Corner UI**: A dedicated dashboard view for Agents showing "Top 5" prioritized tasks based on AI scores.
+* **Task 3.4:** Build the **Dashboard Analytics Cards**: Total Leads, Conversion Rate, and Most Inquired Models widgets.
 
 ---
 
-## 5. Deployment Plan (Agile/Terminal)
+## 🤖 Sprint 4: The Telegram Bridge (The "Voice")
+**Goal:** Leverage Telegram for free notifications and "unlimited" file storage.
 
-### 5.1 Environment Setup
-
-1. **Local:** Install Node.js (for React) and XAMPP/MAMP (for PHP/MySQL).
-2. **Staging:** Create a subdomain `dev.yourdomain.com` on DreamHost for testing.
-3. **Production:** Main domain `yourdomain.com`.
-
-### 5.2 Terminal Deployment Script
-
-We will use a **Post-Receive Hook** in Git. Whenever you run `git push dreamhost main`:
-
-1. The server receives the code.
-2. The script moves the PHP files to the `/api` folder.
-3. The script moves the React `dist` files to the `/public_html` folder.
+* **Task 4.1:** Create a **Telegram Bot** via @BotFather and connect it to the Next.js backend via webhooks.
+* **Task 4.2:** Implement **Lead Alerts**: Automatically send a Telegram message to an Agent when a new "Hot" lead is assigned to them.
+* **Task 4.3:** Build the **Telegram Storage Handler**: Logic to upload property images/receipts to a private Telegram channel and store the `file_id` in Supabase.
+* **Task 4.4:** Develop the **Messaging Feed**: A UI component to view lead-specific messages synced from Telegram.
 
 ---
 
-## 6. Testing Strategy (Agile Sprints)
+## 💰 Sprint 5: Financials & Resources (The "ERP")
+**Goal:** Manage money tracking and agent training materials.
 
-- **Unit Testing:** Use **Jest** for React component logic.
-- **API Testing:** Use **Postman** or **Insomnia** to verify PHP endpoints before connecting them to React.
-- **User Acceptance (UAT):** Real agents test the "Closer's Corner" dashboard on their mobile phones to ensure field usability.
+* **Task 5.1:** Build the **DP Tracker (Milestones)**: A financial ledger UI where agents input payment dates and amounts.
+* **Task 5.2:** Create the **Project Listing Gallery**: A searchable grid of property models, locations, and pricing for landing page synchronization.
+* **Task 5.3:** Implement **"Other Materials" Module**: A restricted file repository for Agent Guides and Handbooks (Admin/SAO access only).
+* **Task 5.4:** Create the **Memo System**: A broadcast tool for management to send company-wide digital announcements.
 
 ---
 
-[Building a Full Stack CRM with PHP and AI](https://www.youtube.com/watch?v=8zh7ZEG9GEA)
+## 🛠️ Sprint 6: Workforce & Optimization (The "Admin")
+**Goal:** Finalize management tools and system stability.
 
-This video is highly relevant as it demonstrates the exact process of building a functional CRM using PHP and AI tools for free, aligning perfectly with your goal of a cost-effective, AI-driven real estate hub.
+* **Task 6.1:** Build **Workforce Management**: A CRUD interface for Superadmins to manage users, teams, and licensing statuses.
+* **Task 6.2:** Develop the **IT Ticketing System**: A simple form for users to report bugs or UI feedback.
+* **Task 6.3:** Implement **Lead Load Balancing**: Logic for Supervisors to see lead volume across their team and re-assign "At-Risk" leads.
+* **Task 6.4:** **Final QA & Deployment**: End-to-end testing of RBAC and deploying to Vercel.
+
+---
+
+### Agile Task Comparison Table
+
+| Sprint | Complexity | Main Output | Risk Level |
+| :--- | :--- | :--- | :--- |
+| **1. Foundation** | Low | Auth & Sidebar | 🟢 Low |
+| **2. Engine** | Medium | Secure Lead CRM | 🟡 Medium |
+| **3. Brain** | High | AI Scoring/Dash | 🔴 High |
+| **4. Bridge** | Medium | Telegram Sync | 🟡 Medium |
+| **5. ERP** | Medium | DP Tracker/Gallery | 🟢 Low |
+| **6. Admin** | Low | Team Management | 🟢 Low |
+
+Which specific task from **Sprint 1** or **Sprint 2** would you like to see the initial code structure for first?

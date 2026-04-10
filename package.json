@@ -4,20 +4,25 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "deploy": "npm run build && node deploy.js"
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "deploy": "pnpm build && node deploy.js"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^7.7.0",
+    "@prisma/client": "^7.7.0",
     "@types/react-router-dom": "^5.3.3",
     "bootstrap": "^5.2.3",
+    "dotenv": "^17.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -27,6 +32,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "ftp-deploy": "^2.4.7",
+    "prisma": "^7.7.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
   }
