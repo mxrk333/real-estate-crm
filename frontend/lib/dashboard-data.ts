@@ -166,8 +166,8 @@ export const memos: MemoItem[] = [
 ];
 
 export const userProfile = {
-  name: "Gabriel Libacao Jr.",
-  role: "Chief Executive Officer",
+  name: "Mark Patigayon",
+  role: "Senior Technology Officer",
   avatarSrc:
     "https://lh3.googleusercontent.com/aida-public/AB6AXuD2cQl7vQvBYfwFM2L3TNxh9wvjMWuGJc03z9hOxfxFuwTtL9Cjzl_qU-z5OYEik4-KnVpi8vzRd7ZCnuv4VfQZoDL5q2sPJPUP9c8OMRRsaizpMGLqV5tgI3po01Ls6UHEh422CQMypYgxKYplAqPdzyzb82uUVTwy1CnbmtY_bz6E1EGz41MpRUMlhsp6gSLYHZp70IlGeyc1IzGZpHhbpwirX6eWen8KK_qdkHSqoA3Iiame8opY6YvrHBx8-TNUxTMVeU_Z9kw",
   avatarAlt:

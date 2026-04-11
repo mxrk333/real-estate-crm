@@ -2,9 +2,9 @@
 
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import fs from "fs/promises";
-import path from "path";
-import { writeFile } from "fs/promises";
+import { UTApi } from "uploadthing/server";
+
+const utapi = new UTApi();
 
 export async function fetchProjects() {
   console.log("FETCH_PROJECTS: START");
@@ -34,9 +34,12 @@ export async function fetchProjects() {
       size: "portrait", 
       salesExecs: 0,
       category: property.city.toLowerCase().replace(/ /g, "-"),
+      province: property.city || "",
       // Extension details
       houseModel: property.houseModel || "Not specified",
       houseType: property.type || "Not specified",
+      bedrooms: property.beds,
+      bathrooms: Number(property.baths),
       constructionStatus: property.constructionStatus || "Not specified",
       developer: property.developer || "Not specified",
       exactLocation: property.exactLocation || property.location,
@@ -66,22 +69,18 @@ export async function createProjectAction(formData: FormData) {
     const files = formData.getAll("imageFiles") as File[];
     console.log(`CREATE_PROJECT_ACTION: PROCESSING ${files.length} FILES`);
 
-    const publicPath = path.join(process.cwd(), "public", "uploads");
-    try {
-      await fs.access(publicPath);
-    } catch {
-      await fs.mkdir(publicPath, { recursive: true });
-    }
+    const validFiles = files.filter(f => f && f.name && f.name !== "undefined" && f.size > 0);
 
-    for (const file of files) {
-      if (file && file.name && file.name !== "undefined" && file.size > 0) {
-        console.log("CREATE_PROJECT_ACTION: SAVING_FILE", file.name);
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${Date.now()}_${Math.floor(Math.random() * 1000)}_${file.name.replace(/\s+/g, "_")}`;
-        const filePath = path.join(publicPath, filename);
-        await writeFile(filePath, buffer);
-        savedImageUrls.push(`/uploads/${filename}`);
-      }
+    if (validFiles.length > 0) {
+      console.log(`CREATE_PROJECT_ACTION: UPLOADING ${validFiles.length} FILES TO UPLOADTHING`);
+      const response = await utapi.uploadFiles(validFiles);
+      response.forEach((res) => {
+        if (res.data?.url) {
+          savedImageUrls.push(res.data.url);
+        } else if (res.error) {
+          console.error("Upload Error:", res.error);
+        }
+      });
     }
 
     const mainImageUrl = savedImageUrls.length > 0 ? savedImageUrls[0] : (formData.get("imageUrl") as string || undefined);
@@ -111,6 +110,8 @@ export async function createProjectAction(formData: FormData) {
         images: savedImageUrls,
         imageAlt: (formData.get("name") as string) || "Project Image",
         type: (formData.get("type") as any) || "HOUSE_AND_LOT",
+        beds: formData.get("bedrooms") ? parseInt(formData.get("bedrooms") as string, 10) : 0,
+        baths: formData.get("bathrooms") ? parseFloat(formData.get("bathrooms") as string) : 0,
       },
     });
 
@@ -120,5 +121,84 @@ export async function createProjectAction(formData: FormData) {
   } catch (error: any) {
     console.error("CREATE_PROJECT_ACTION: ERROR", error);
     return { success: false, error: error.message || "Failed to create project" };
+  }
+}
+
+export async function updateProjectAction(projectId: string, formData: FormData) {
+  console.log("UPDATE_PROJECT_ACTION: START", projectId);
+  try {
+    const savedImageUrls: string[] = [];
+    const files = formData.getAll("imageFiles") as File[];
+    console.log(`UPDATE_PROJECT_ACTION: PROCESSING ${files.length} FILES`);
+
+    const validFiles = files.filter(f => f && f.name && f.name !== "undefined" && f.size > 0);
+
+    if (validFiles.length > 0) {
+      console.log(`UPDATE_PROJECT_ACTION: UPLOADING ${validFiles.length} FILES TO UPLOADTHING`);
+      const response = await utapi.uploadFiles(validFiles);
+      response.forEach((res) => {
+        if (res.data?.url) {
+          savedImageUrls.push(res.data.url);
+        } else if (res.error) {
+          console.error("Upload Error:", res.error);
+        }
+      });
+    }
+
+    // Merge existing images user wants to keep + new uploads
+    const existingImages = formData.get("existingImages") as string;
+    const keptImages: string[] = existingImages ? JSON.parse(existingImages) : [];
+    const allImages = [...keptImages, ...savedImageUrls];
+    const mainImageUrl = allImages.length > 0 ? allImages[0] : (formData.get("imageUrl") as string || undefined);
+
+    const updatedProperty = await db.property.update({
+      where: { id: projectId },
+      data: {
+        name: (formData.get("name") as string) || "Unnamed Project",
+        location: (formData.get("location") as string) || "Unknown Location",
+        city: (formData.get("city") as string) || "Dasmariñas",
+        developer: formData.get("developer") as string,
+        exactLocation: formData.get("exactLocation") as string,
+        houseModel: formData.get("houseModel") as string,
+        constructionStatus: (formData.get("constructionStatus") as string) || "Preselling",
+        priority: (formData.get("priority") as string) || "Standard",
+        commissionRate: (formData.get("commissionRate") as string) || "5.00% COMM",
+        priceRange: formData.get("priceRange") as string,
+        tcp: formData.get("tcp") ? Number(formData.get("tcp")) : undefined,
+        reservationFee: formData.get("reservationFee") ? Number(formData.get("reservationFee")) : undefined,
+        requiredSalary: formData.get("requiredSalary") ? Number(formData.get("requiredSalary")) : undefined,
+        dpOption: formData.get("dpOption") as string,
+        driveLink: formData.get("driveLink") as string,
+        price: formData.get("tcp") ? Number(formData.get("tcp")) : undefined,
+        imageUrl: mainImageUrl,
+        images: allImages,
+        imageAlt: (formData.get("name") as string) || "Project Image",
+        type: (formData.get("type") as any) || "HOUSE_AND_LOT",
+        beds: formData.get("bedrooms") ? parseInt(formData.get("bedrooms") as string, 10) : 0,
+        baths: formData.get("bathrooms") ? parseFloat(formData.get("bathrooms") as string) : 0,
+      },
+    });
+
+    console.log("UPDATE_PROJECT_ACTION: SUCCESS", updatedProperty.id);
+    revalidatePath("/projects");
+    return { success: true, project: { id: updatedProperty.id, name: updatedProperty.name } };
+  } catch (error: any) {
+    console.error("UPDATE_PROJECT_ACTION: ERROR", error);
+    return { success: false, error: error.message || "Failed to update project" };
+  }
+}
+
+export async function deleteProjectAction(projectId: string) {
+  console.log("DELETE_PROJECT_ACTION: START", projectId);
+  try {
+    // Delete related inquiries first
+    await db.inquiry.deleteMany({ where: { propertyId: projectId } });
+    await db.property.delete({ where: { id: projectId } });
+    console.log("DELETE_PROJECT_ACTION: SUCCESS", projectId);
+    revalidatePath("/projects");
+    return { success: true };
+  } catch (error: any) {
+    console.error("DELETE_PROJECT_ACTION: ERROR", error);
+    return { success: false, error: error.message || "Failed to delete project" };
   }
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import { Suspense } from "react";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ProjectGallery } from "@/components/projects/ProjectGallery";
 
@@ -16,7 +16,9 @@ export default async function ProjectsPage() {
   
   return (
     <DashboardShell>
-      <ProjectGallery initialProjects={dbProjects as any} />
+      <Suspense fallback={<div className="p-8 text-center text-on-surface-variant">Loading projects data...</div>}>
+        <ProjectGallery initialProjects={dbProjects as any} />
+      </Suspense>
     </DashboardShell>
   );
 }

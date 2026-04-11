@@ -13,11 +13,14 @@ export type ProjectCard = {
   size: "anchor" | "portrait" | "square";
   tag?: ProjectTag;
   salesExecs?: number;
-  category: "metro-manila" | "cavite" | "laguna" | "cebu";
+  category: string;
+  province?: string;
 
   // Detailed fields
   houseModel?: string;
   houseType?: string;
+  bedrooms?: number;
+  bathrooms?: number;
   constructionStatus?: string;
   developer?: string;
   exactLocation?: string;
@@ -123,12 +126,4 @@ export const projects: ProjectCard[] = [
   },
 ];
 
-export const projectFilters = [
-  { label: "All Assets", value: "all" },
-  { label: "Metro Manila", value: "metro-manila" },
-  { label: "Cavite Clusters", value: "cavite" },
-  { label: "Laguna Estates", value: "laguna" },
-  { label: "Cebu Hubs", value: "cebu" },
-] as const;
-
-export type FilterValue = (typeof projectFilters)[number]["value"];
+export type FilterValue = string;
