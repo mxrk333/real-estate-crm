@@ -24,9 +24,9 @@ function PropertiesPage() {
     };
   }, [selectedProject]);
 
-  // Derived state for the active project's images
+  // Derived state for the active project's images (removes absolute duplicate urls)
   const allImages = selectedProject 
-    ? [selectedProject.imageUrl, ...(selectedProject.images || [])].filter(Boolean)
+    ? Array.from(new Set([selectedProject.imageUrl, ...(selectedProject.images || [])].filter(Boolean)))
     : [];
 
   const handleNextImage = (e: React.MouseEvent) => {
@@ -320,44 +320,50 @@ function PropertiesPage() {
             </button>
 
             {/* Left: Sticky Image Showcase Carousel */}
-            <div className="relative w-full md:w-1/2 h-[45vh] md:h-full shrink-0 bg-gray-100 group">
+            <div className="relative w-full md:w-1/2 h-[45vh] md:h-full shrink-0 bg-neutral-950 flex items-center justify-center group overflow-hidden">
+              {/* Subtle blurred background to fill empty spaces nicely */}
+              <div 
+                className="absolute inset-0 bg-cover bg-center blur-2xl opacity-40 scale-110" 
+                style={{ backgroundImage: `url(${allImages[currentImageIndex]})` }} 
+              />
+              
               <img
                 src={allImages[currentImageIndex] || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                 alt={`${selectedProject.name} layout view`}
                 key={currentImageIndex} /* Force re-render for fading if needed */
-                className="w-full h-full object-cover animate-fade-in"
+                className="relative z-10 w-full h-full object-contain animate-fade-in"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/90 via-black/10 to-transparent pointer-events-none" />
 
               {/* Carousel Controls (Appear if more than 1 image) */}
               {allImages.length > 1 && (
                 <>
                   <button 
                     onClick={handlePrevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/70 backdrop-blur text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/30 backdrop-blur-md text-white flex items-center justify-center rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity z-30"
                   >
-                    <span className="material-symbols-outlined text-[24px]">chevron_left</span>
+                    <span className="material-symbols-outlined text-[20px] md:text-[24px]">chevron_left</span>
                   </button>
                   <button 
                     onClick={handleNextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/40 hover:bg-black/70 backdrop-blur text-white flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/30 backdrop-blur-md text-white flex items-center justify-center rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity z-30"
                   >
-                    <span className="material-symbols-outlined text-[24px]">chevron_right</span>
+                    <span className="material-symbols-outlined text-[20px] md:text-[24px]">chevron_right</span>
                   </button>
                   
                   {/* Image Counter */}
-                  <div className="absolute top-6 left-6 md:top-8 md:left-8 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full text-white text-xs font-semibold tracking-widest shadow-sm">
+                  <div className="absolute top-6 left-6 md:top-8 md:left-8 z-30 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full text-white text-xs font-semibold tracking-widest shadow-sm">
                     {currentImageIndex + 1} / {allImages.length}
                   </div>
                 </>
               )}
               
               {/* Text Layout atop image */}
-              <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 max-w-sm pr-6 pointer-events-none">
-                <span className="inline-block px-4 py-2 bg-black text-white text-[10px] uppercase tracking-[0.2em] mb-4">
+              <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 z-30 max-w-sm pr-6 pointer-events-none">
+                <span className="inline-block px-4 py-2 bg-white/10 backdrop-blur text-white border border-white/20 text-[10px] uppercase tracking-[0.2em] mb-4 shadow-sm">
                   {formatHouseType(selectedProject.type)}
                 </span>
-                <h2 className="text-3xl md:text-5xl font-light text-white leading-tight drop-shadow-lg">{selectedProject.name}</h2>
+                <h2 className="text-3xl md:text-5xl font-light text-white leading-tight drop-shadow-xl">{selectedProject.name}</h2>
                 <div className="flex items-center gap-2 mt-4 text-white/90 drop-shadow-md">
                   <span className="material-symbols-outlined text-[16px] font-light">location_on</span>
                   <p className="text-sm font-light uppercase tracking-widest">{selectedProject.location}</p>

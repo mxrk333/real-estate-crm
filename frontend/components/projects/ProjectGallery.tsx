@@ -704,10 +704,7 @@ function ProjectForm({
               className="w-full p-2.5 bg-transparent border border-outline-variant rounded-lg focus:border-primary outline-none"
             >
               <option value="HOUSE_AND_LOT">🏠 House and Lot</option>
-              <option value="CONDOMINIUM">🏢 Condominium</option>
-              <option value="TOWNHOUSE">🏘️ Townhouse</option>
               <option value="VACANT_LOT">🌿 Vacant Lot</option>
-              <option value="COMMERCIAL">🏪 Commercial</option>
             </select>
           </div>
 
